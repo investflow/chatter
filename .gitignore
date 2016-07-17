@@ -1,0 +1,14 @@
+.gradle
+gradle
+
+.idea
+*.iml
+
+build
+local
+
+google-services.json
+local.properties
+
+gradlew
+gradlew.bat
