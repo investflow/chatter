@@ -37,8 +37,7 @@ public class NotificationService extends FirebaseMessagingService {
     }
 
     private void sendNotification(@NotNull String user, @NotNull String messageBody) {
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(NOTIFICATION_ID);
+        clearAllNotifications(this);
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
@@ -54,8 +53,12 @@ public class NotificationService extends FirebaseMessagingService {
 
         AppUtils.addNotificationSound(builder);
 
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(NOTIFICATION_ID, builder.build());
     }
 
-
+    public static void clearAllNotifications(@NotNull Context ctx) {
+        NotificationManager notificationManager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(NOTIFICATION_ID);
+    }
 }

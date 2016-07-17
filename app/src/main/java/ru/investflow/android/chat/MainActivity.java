@@ -143,6 +143,7 @@ public class MainActivity extends ListActivity {
     protected void onResume() {
         super.onResume();
         state = State.Resumed;
+        NotificationService.clearAllNotifications(this);
     }
 
     @Override
