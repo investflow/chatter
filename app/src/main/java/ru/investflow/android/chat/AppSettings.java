@@ -33,4 +33,20 @@ public class AppSettings {
         setLoginAndPasswordHash(null, null);
     }
 
+    public static boolean useNotifications() {
+        return getPreferences().getBoolean("useNotifications", true);
+    }
+
+    public static void setUseNotifications(boolean val) {
+        getPreferences().edit().putBoolean("useNotifications", val).apply();
+    }
+
+    public static boolean useSoundInNotifications() {
+        return getPreferences().getBoolean("useSoundInNotifications", true);
+    }
+
+    public static void setUseSoundInNotifications(boolean val) {
+        getPreferences().edit().putBoolean("useSoundInNotifications", val).apply();
+    }
+
 }

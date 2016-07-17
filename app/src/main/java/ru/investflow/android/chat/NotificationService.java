@@ -27,12 +27,20 @@ public class NotificationService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        log.debug("onMessageReceived: " + remoteMessage);
-        Map<String, String> data = remoteMessage.getData();
-        String user = data.get("user");
-        String message = data.get("message");
-        if (message != null && user != null && !user.equals(AppSettings.getLogin()) && !AppUtils.isForeground()) {
-            sendNotification(user, message);
+        try {
+            log.debug("onMessageReceived: " + remoteMessage);
+            Map<String, String> data = remoteMessage.getData();
+            String user = data.get("user");
+            String message = data.get("message");
+            boolean showNotification = message != null && user != null
+                    && !user.equals(AppSettings.getLogin())
+                    && !AppUtils.isForeground()
+                    && AppSettings.useNotifications();
+            if (showNotification) {
+                sendNotification(user, message);
+            }
+        } catch (Exception e) {
+            log.error("Unexpected error!", e);
         }
     }
 

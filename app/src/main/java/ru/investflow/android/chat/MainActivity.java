@@ -3,6 +3,7 @@ package ru.investflow.android.chat;
 import android.app.ListActivity;
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -13,6 +14,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +33,9 @@ import ru.investflow.android.chat.util.ThreadUtils;
 // https://developer.android.com/reference/android/app/Activity.html
 public class MainActivity extends ListActivity {
 
+    private EditText inputText;
+    private ImageButton sendButton;
+    private ImageButton menuButton;
 
     public enum State {
         Created,
@@ -70,7 +75,7 @@ public class MainActivity extends ListActivity {
         setContentView(R.layout.activity_main);
 
         // Setup our input methods. Enter key on the keyboard or pushing the send button
-        EditText inputText = (EditText) findViewById(R.id.messageInput);
+        inputText = (EditText) findViewById(R.id.messageInput);
         inputText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
@@ -81,12 +86,33 @@ public class MainActivity extends ListActivity {
             }
         });
 
-        findViewById(R.id.sendButton).setOnClickListener(new View.OnClickListener() {
+        sendButton = (ImageButton) findViewById(R.id.sendButton);
+        sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 sendMessage();
             }
         });
+
+        menuButton = (ImageButton) findViewById(R.id.menuButton);
+        menuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SettingsDialog.showDialog(MainActivity.this);
+            }
+        });
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+
+        //Make both send & menu buttons have the same size
+        menuButton.setMinimumWidth(sendButton.getMeasuredWidth());
+        menuButton.setMinimumHeight(sendButton.getMeasuredHeight());
+
+        // Align text editor height too
+        inputText.setMinimumHeight(sendButton.getMeasuredHeight());
     }
 
     @Override
@@ -122,13 +148,11 @@ public class MainActivity extends ListActivity {
         firebaseConnectionListener = firebase.getReference(".info/connected").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-//                boolean connected = (Boolean) dataSnapshot.getValue();
-//                if (connected) {
-//                    Toast.makeText(MainActivity.this, "Соединение установлено", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    Toast.makeText(MainActivity.this, "Нет соединения", Toast.LENGTH_SHORT).show();
+                boolean connected = (Boolean) dataSnapshot.getValue();
+                //noinspection deprecation
+                Drawable drawable = getResources().getDrawable(connected ? android.R.drawable.presence_online : android.R.drawable.presence_invisible);
+                menuButton.setImageDrawable(drawable);
             }
-//            }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -171,9 +195,7 @@ public class MainActivity extends ListActivity {
         }
     }
 
-
     private void sendMessage() {
-        final EditText inputText = (EditText) findViewById(R.id.messageInput);
         String input = inputText.getText().toString();
         if (TextUtils.isEmpty(input)) {
             return;

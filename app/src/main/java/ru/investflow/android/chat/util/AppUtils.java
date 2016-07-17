@@ -15,6 +15,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import ru.investflow.android.chat.App;
+import ru.investflow.android.chat.AppSettings;
 import ru.investflow.android.chat.MainActivity;
 
 
@@ -66,17 +67,19 @@ public class AppUtils {
     }
 
     public static void addNotificationSound(NotificationCompat.Builder builder) {
+        if (!AppSettings.useSoundInNotifications()) {
+            return;
+        }
         AudioManager am = (AudioManager) App.get().getSystemService(Context.AUDIO_SERVICE);
         if (am != null) {
             switch (am.getRingerMode()) {
                 case AudioManager.RINGER_MODE_SILENT:
                     log.debug("Silent mode, ignoring notification");
                     return;
-                case AudioManager.RINGER_MODE_VIBRATE: {
+                case AudioManager.RINGER_MODE_VIBRATE:
                     log.debug("Vibrate mode, bzz...");
                     builder.setVibrate(new long[]{500, 500, 500, 500, 500});
                     return;
-                }
                 case AudioManager.RINGER_MODE_NORMAL:
                     builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
                     break;

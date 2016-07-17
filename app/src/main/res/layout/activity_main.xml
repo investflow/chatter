@@ -19,6 +19,13 @@
         android:layout_alignParentBottom="true"
         android:orientation="horizontal">
 
+        <ImageButton
+            android:id="@+id/menuButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/presence_invisible"
+            tools:ignore="ContentDescription" />
+
         <EditText
             android:id="@+id/messageInput"
             android:layout_width="0dp"
