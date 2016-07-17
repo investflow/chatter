@@ -10,6 +10,7 @@ import android.support.v4.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.util.Map;
@@ -28,14 +29,14 @@ public class NotificationService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         log.debug("onMessageReceived: " + remoteMessage);
         Map<String, String> data = remoteMessage.getData();
-        RemoteMessage.Notification notification = remoteMessage.getNotification();
-        String message = notification == null ? data.get("message") : notification.getBody();
-        if (message != null && !AppUtils.isForeground()) {
-            sendNotification(message);
+        String user = data.get("user");
+        String message = data.get("message");
+        if (message != null && user != null && !user.equals(AppSettings.getLogin()) && !AppUtils.isForeground()) {
+            sendNotification(user, message);
         }
     }
 
-    private void sendNotification(String messageBody) {
+    private void sendNotification(@NotNull String user, @NotNull String messageBody) {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(NOTIFICATION_ID);
 
@@ -46,7 +47,7 @@ public class NotificationService extends FirebaseMessagingService {
                 .setSmallIcon(R.drawable.ic_notification_small)
                 .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_notification_large))
                 .setContentTitle("Чат Investflow")
-                .setContentText(messageBody)
+                .setContentText(user + ": " + messageBody)
                 .setWhen(System.currentTimeMillis())
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent);
