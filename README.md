@@ -2,7 +2,7 @@
 
 ### Установка
 * [Google Play](https://play.google.com/store/apps/details?id=ru.investflow.android.chat)
-* [Скачать напрямую](https://github.com/investflow/chatter/releases/download/1.0.0/chatter-1.0.0-release.apk)
+* [Скачать с GitHub](https://github.com/investflow/chatter/releases/download/1.0.0/chatter-1.0.0-release.apk)
 
 ### Сборка из исходного кода
 * Открыть проект в Android Studio
