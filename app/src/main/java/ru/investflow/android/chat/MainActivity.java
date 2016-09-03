@@ -13,6 +13,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -33,7 +34,7 @@ import ru.investflow.android.chat.util.ThreadUtils;
 // https://developer.android.com/reference/android/app/Activity.html
 public class MainActivity extends ListActivity {
 
-    private EditText inputText;
+    public EditText inputText;
     private ImageButton sendButton;
     private ImageButton menuButton;
 
@@ -122,6 +123,7 @@ public class MainActivity extends ListActivity {
 
         // Setup our view and list adapter. Ensure it scrolls to the bottom as data changes
         final ListView listView = getListView();
+        listView.setOnItemLongClickListener(new MessageActionsListener());
 
         // Tell our list adapter that we only want 100 messages at a time
         FirebaseDatabase firebase = FirebaseDatabase.getInstance();
@@ -228,7 +230,7 @@ public class MainActivity extends ListActivity {
         });
     }
 
-    private void hideVirtualKeyboard() {
+    public void hideVirtualKeyboard() {
         View view = getCurrentFocus();
         if (view != null) {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -236,4 +238,21 @@ public class MainActivity extends ListActivity {
         }
     }
 
+    public void showVirtualKeyboard() {
+        inputText.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(inputText, InputMethodManager.SHOW_IMPLICIT);
+    }
+
+    private class MessageActionsListener implements AdapterView.OnItemLongClickListener {
+        @Override
+        public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+            ChatMessage cm = (ChatMessage) adapterView.getItemAtPosition(i);
+            if (cm == null) {
+                return false;
+            }
+            MessageActions.showActions(MainActivity.this, cm);
+            return true;
+        }
+    }
 }
